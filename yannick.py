@@ -84,16 +84,18 @@ def analyse(subjects):
     df = pd.DataFrame()
     samples = np.zeros(4)
     stages = np.zeros(4)
+    duration = np.zeros(4)
     
     for i in range(1,5):
         samples[i-1] = subjects['S' + str(i)][0]        
         stages[i-1] = len(subjects['S' + str(i)][2])
+        duration[i-1] = len(subjects['S' + str(i)][2]) * 30.0 / 3600
   
     df['samples'] = samples
     df['stages'] = stages
     df['epoch'] = df['samples'] / subjects['S' + str(i)][1]  / df['stages']
 #    df['sleep duration'] = samples / subjects['S' + str(i)][1] / 3600
-    df['sleep duration'] = (len(subjects['S' + str(i)][2]) * 30) / 3600
+    df['sleep duration'] = duration
 
     
     freq = np.zeros(4) # stage frequency (ie # of occurence of stage 0, stage 1 etc...)
@@ -139,6 +141,39 @@ def plot_histogram(df1, df2):
     ax.set_xticklabels( ('1', '2', '3', '4', 'Mean') )
 
     ax.legend( (rects1[0], rects2[0]), ('Baseline', 'After sleep depravation') )
+    
+def plot_sleepTime(df1, df2):
+    """
+    First conclusion - obvious from experience -> sleep time longer after sleep depravation
+    df1: normal sleep (df1 = analyse(base))
+    df2: sleep depravation (df2 = analyse(depr))
+    """    
+    N = 5
+    normal = df1['sleep duration'].tolist()
+    mean = sum(normal) / len(normal)
+    normal.extend([mean])
+
+    ind = np.arange(N)  # the x locations for the groups
+    width = 0.35       # the width of the bars
+
+    fig, ax = plt.subplots()
+    rects1 = ax.bar(ind, normal, width, color='r')
+
+    depravation = df2['sleep duration'].tolist()
+    mean = sum(depravation) / len(depravation)
+    depravation.extend([mean])
+
+
+    rects2 = ax.bar(ind+width, depravation, width, color='y')
+
+    ax.set_ylabel('Sleep time (hours)')
+    ax.set_xlabel('Subjects')
+    
+    ax.set_title('Overall sleep duration comparison')
+    ax.set_xticks(ind+width)
+    ax.set_xticklabels( ('1', '2', '3', '4', 'Mean') )
+
+    ax.legend( (rects1[0], rects2[0]), ('Baseline', 'After sleep depravation') )    
 
 
 
@@ -148,3 +183,4 @@ if __name__ == "__main__":
     df1 = analyse(base)
     df2 = analyse(depr)
     plot_histogram(df1, df2)
+    plot_sleepTime(df1, df2)
