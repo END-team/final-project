@@ -50,11 +50,10 @@ def plot_stages(df):
     #by_keys.mean().plot(kind='bar', stacked=True)
 
     # And add plot details (title, legend, xlabel, and ylabel)
-    plt.title('Baseline sleep vs. Recovery sleep')
+    plt.title('Baseline sleep vs. Recovery sleep By Sleep Stage anf Subject')
     plt.ylabel('Sleep stage/Subject')
     plt.xlabel('Time, minutes')
     plt.legend(loc='upper right')
-    
     plt.show()
     return
     
