@@ -105,6 +105,24 @@ def analyse(subjects):
             freq[j-1] = list(subjects['S' + str(j)][2]).count(i)
         df['s' + str(i)] = freq
         df['%' + str(i)] = freq / df['stages'] * 100
+        
+    ttab = np.zeros((4,64))
+    for k in range(0,4):
+        l = list(subjects['S' + str(k+1)][2])
+        tmp = np.zeros((8,8))    
+        current = l[0]
+        for i in range(0, len(l)):
+            stg = l[i]
+            if (stg < 6) & (stg <> current):
+                tmp[current, stg] = tmp[current, stg] + 1  
+                current = stg
+        t = np.reshape(tmp, 64)
+        ttab[k] = t
+    
+    for i in range(0,6): # do not care about stage transitions > 5
+        for j in range(0,6):
+            col = ttab[:,(i*8)+j]
+            df['t' + str(i) + '-' + str(j)] = col
             
     return df
 
@@ -175,12 +193,42 @@ def plot_sleepTime(df1, df2):
 
     ax.legend( (rects1[0], rects2[0]), ('Baseline', 'After sleep depravation') )    
 
+def plot_transition(df1, df2):
+    """
+    plot stage transitions
+    df1: normal sleep (df1 = analyse(base))
+    df2: sleep depravation (df2 = analyse(depr))
+    """    
+    N = 5
+    ind = np.arange(N)  # the x locations for the groups
+    width = 0.2       # the width of the bars
+    plt.close()
 
+    fig, ax = plt.subplots(nrows=6, ncols=6, sharex='col', sharey='row')
+    plt.subplots_adjust(wspace = 0.2,hspace = 0.4 )
+    for i in range(0,6): # do not care about stage transitions > 5
+        for j in range(0,6):     
+            clef = 't' + str(i) + '-' + str(j)
+            normal = df1[clef].tolist()
+            mean = sum(normal) / len(normal)
+            normal.extend([mean])
+            rects1 = ax[i,j].bar(ind, normal, width, color='r')
+            depravation = df2[clef].tolist()
+            mean = sum(depravation) / len(depravation)
+            depravation.extend([mean])
+            rects2 = ax[i,j].bar(ind+width, depravation, width, color='y')
+            ax[i,j].set_title('t' + str(i) + '-' + str(j))
+            ax[i,j].set_xticks(ind+width)
+            ax[i,j].set_xticklabels( ('1', '2', '3', '4', 'Avg') )
+#    ax.legend( (rects1[0], rects2[0]), ('Baseline', 'After sleep depravation') )
+#            ax.set_ylabel('# of transitions')
+#            ax.set_xlabel('Subjects')
 
 if __name__ == "__main__":
 # Uncomment next to reload the files (needed to run once)
 #    base, depr = load_all()
     df1 = analyse(base)
     df2 = analyse(depr)
-    plot_histogram(df1, df2)
-    plot_sleepTime(df1, df2)
+#    plot_histogram(df1, df2)
+#    plot_sleepTime(df1, df2)
+    plot_transition(df1, df2)
