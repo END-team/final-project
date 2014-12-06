@@ -44,28 +44,38 @@ def pull_epoch(data, srate, epoch_number):
 
 def plot_spectrograms(bsl,rec,rate,title):
     plt.close()
+    plt.rc('font', family='Arial')
     fig, ax = plt.subplots(nrows=9, ncols=2, sharex='col', sharey='row')
+    fig.suptitle(title + " - REM stage", fontsize=20)
     plt.subplots_adjust(wspace = .05,hspace = 0.4 )
     ny_nfft=1024
     i=0
+    plt.tick_params(axis='both', labelsize=8)
     while i<9:
         Pxx, freq, bins, im = ax[i,0].specgram(bsl[i],NFFT=ny_nfft,Fs=rate)
+        ax[i,0].set_yticks(np.arange(0, 50, 10))
         ax[i,0].set_ylim([0, 40])
         if(i==8):
-            ax[i,0].set_xlabel("Time, seconds")
-        ax[i,0].set_ylabel("Freq, Hz")
-        ax[i,0].set_title(title+' baseline sleep, REM stage, Channel:'+str(i+1))
+            ax[i,0].set_xlabel("Time, seconds", fontsize=10)
+        ax[i,0].set_ylabel("Freq, Hz", fontsize=8)
+        ax[i,0].set_title('Baseline, channel:'+str(i+1), fontsize=10)
+        for label in (ax[i,0].get_xticklabels() + ax[i,0].get_yticklabels()):
+            label.set_fontname('Arial')
+            label.set_fontsize(8)
         i=i+1
     i=0
     while i<9:
         Pxx, freq, bins, im = ax[i,1].specgram(rec[i],NFFT=ny_nfft,Fs=rate)
-        #ax[i,1].ylim(0,40)
+        ax[i,0].set_yticks(np.arange(0, 50, 10))
         ax[i,1].set_ylim([0, 40])
         #ax[i,1].set_xlim([0, 10000]) #13000])
         if(i==8):
-            ax[i,1].set_xlabel("Time, seconds")
+            ax[i,1].set_xlabel("Time, seconds", fontsize=10)
         #ax[i,1].set_ylabel("Freq, Hz")
-        ax[i,1].set_title(title+'   recovery sleep, REM stage, Channel:'+str(i+1))
+        ax[i,1].set_title('Recovery, channel:'+str(i+1), fontsize=10)
+        for label in (ax[i,0].get_xticklabels() + ax[i,0].get_yticklabels()):
+            label.set_fontname('Arial')
+            label.set_fontsize(8)
         i=i+1
     plt.show()
     return
@@ -73,10 +83,11 @@ def plot_spectrograms(bsl,rec,rate,title):
 ##########################
 #You can put the code that calls the above functions down here    
 if __name__ == "__main__":
+    plt.close('all') #Closes old plots.
     j = 1    
     while j<5:
         BSL_REM, srate = load_REM_from_file('S'+str(j)+'_BSL.npz')
         REC_REM, srate = load_REM_from_file('S'+str(j)+'_REC.npz')
-        plot_spectrograms(BSL_REM,REC_REM,srate,'Subject '+str(j))
+        plot_spectrograms(BSL_REM,REC_REM,srate,'Subject: '+str(j))
         j=j+1
-    plt.close('all') #Closes old plots.
+

@@ -226,7 +226,7 @@ def plot_transition(df1, df2):
 
 if __name__ == "__main__":
 # Uncomment next to reload the files (needed to run once)
-#    base, depr = load_all()
+    base, depr = load_all()
     df1 = analyse(base)
     df2 = analyse(depr)
 #    plot_histogram(df1, df2)
