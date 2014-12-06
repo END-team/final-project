@@ -203,8 +203,10 @@ def plot_transition(df1, df2):
     ind = np.arange(N)  # the x locations for the groups
     width = 0.2       # the width of the bars
     plt.close()
+    plt.rc('font', family='Arial')
 
     fig, ax = plt.subplots(nrows=6, ncols=6, sharex='col', sharey='row')
+    fig.suptitle("Comparison of the number of stage transitions, (origin stage " + u'\u2192' + " dest. stage)", fontsize=20)        
     plt.subplots_adjust(wspace = 0.2,hspace = 0.4 )
     for i in range(0,6): # do not care about stage transitions > 5
         for j in range(0,6):     
@@ -217,16 +219,19 @@ def plot_transition(df1, df2):
             mean = sum(depravation) / len(depravation)
             depravation.extend([mean])
             rects2 = ax[i,j].bar(ind+width, depravation, width, color='y')
-            ax[i,j].set_title('t' + str(i) + '-' + str(j))
+            for label in (ax[i,j].get_xticklabels() + ax[i,j].get_yticklabels()):
+                label.set_fontname('Arial')
+                label.set_fontsize(8)            
+            ax[i,j].set_title(str(i) + ' ' + u'\u2192' + ' ' + str(j))
             ax[i,j].set_xticks(ind+width)
             ax[i,j].set_xticklabels( ('1', '2', '3', '4', 'Avg') )
-#    ax.legend( (rects1[0], rects2[0]), ('Baseline', 'After sleep depravation') )
-#            ax.set_ylabel('# of transitions')
-#            ax.set_xlabel('Subjects')
+            ax[i,j].set_yticks(np.arange(0, 50, 10))
+            ax[i,j].set_ylim([0,45])
+    fig.legend( (rects1[0], rects2[0]), ('Baseline', 'After sleep depravation'), loc = 'lower right', fontsize=10)
 
 if __name__ == "__main__":
 # Uncomment next to reload the files (needed to run once)
-    base, depr = load_all()
+#    base, depr = load_all()
     df1 = analyse(base)
     df2 = analyse(depr)
 #    plot_histogram(df1, df2)
