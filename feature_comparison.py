@@ -53,7 +53,7 @@ def plot_spectrograms(bsl,rec,rate,y,ax):
     if(y==3):
         ax[y,0].set_xlabel("Time, seconds", fontsize=10)
     ax[y,0].set_ylabel("Freq, Hz", fontsize=8)
-    ax[y,0].set_title('Subject '+str(y+1)+' Baseline, channel:'+str(y+1), fontsize=10)
+    ax[y,0].set_title('Subject '+str(y+1)+' Baseline', fontsize=10)
     for label in (ax[y,0].get_xticklabels() + ax[y,0].get_yticklabels()):
         label.set_fontname('Arial')
         label.set_fontsize(8)
@@ -65,7 +65,7 @@ def plot_spectrograms(bsl,rec,rate,y,ax):
     if(y==3):
         ax[y,1].set_xlabel("Time, seconds", fontsize=10)
     #ax[i,1].set_ylabel("Freq, Hz")
-    ax[y,1].set_title('Recovery, channel:'+str(y+1), fontsize=10)
+    ax[y,1].set_title('Subject '+str(y+1)+' Recovery', fontsize=10)
     for label in (ax[y,0].get_xticklabels() + ax[y,0].get_yticklabels()):
         label.set_fontname('Arial')
         label.set_fontsize(8)
