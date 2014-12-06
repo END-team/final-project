@@ -105,7 +105,8 @@ def analyse(subjects):
             freq[j-1] = list(subjects['S' + str(j)][2]).count(i)
         df['s' + str(i)] = freq
         df['%' + str(i)] = freq / df['stages'] * 100
-        
+         
+    total_transitions = 0
     ttab = np.zeros((4,64))
     for k in range(0,4):
         l = list(subjects['S' + str(k+1)][2])
@@ -116,6 +117,7 @@ def analyse(subjects):
             if (stg < 6) & (stg <> current):
                 tmp[current, stg] = tmp[current, stg] + 1  
                 current = stg
+                total_transitions = total_transitions + 1
         t = np.reshape(tmp, 64)
         ttab[k] = t
     
@@ -123,7 +125,7 @@ def analyse(subjects):
         for j in range(0,6):
             col = ttab[:,(i*8)+j]
             df['t' + str(i) + '-' + str(j)] = col
-            
+            df['%t' + str(i) + '-' + str(j)] = col / total_transitions * 100   
     return df
 
 def plot_histogram(df1, df2):
@@ -133,6 +135,7 @@ def plot_histogram(df1, df2):
     df1: normal sleep (df1 = analyse(base))
     df2: sleep depravation (df2 = analyse(depr))
     """    
+    plt.rc('font', family='Arial')
     N = 5
     normal = df1['%5'].tolist()
     mean = sum(normal) / len(normal)
@@ -142,23 +145,26 @@ def plot_histogram(df1, df2):
     width = 0.35       # the width of the bars
 
     fig, ax = plt.subplots()
-    rects1 = ax.bar(ind, normal, width, color='r')
+    rects1 = ax.bar(ind, normal, width, color='b')
 
     depravation = df2['%5'].tolist()
     mean = sum(depravation) / len(depravation)
     depravation.extend([mean])
 
 
-    rects2 = ax.bar(ind+width, depravation, width, color='y')
+    rects2 = ax.bar(ind+width, depravation, width, color='r')
 
     ax.set_ylabel('Sleep in REM stage (%)')
     ax.set_xlabel('Subjects')
     
-    ax.set_title('REM sleep comparison')
+    ax.set_title('REM sleep comparison', fontsize=20)
     ax.set_xticks(ind+width)
     ax.set_xticklabels( ('1', '2', '3', '4', 'Mean') )
+    for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+           label.set_fontname('Arial')
+           label.set_fontsize(8)            
 
-    ax.legend( (rects1[0], rects2[0]), ('Baseline', 'After sleep depravation') )
+    ax.legend( (rects1[0], rects2[0]), ('Baseline', 'After sleep depravation') ,  loc = 'lower right', fontsize=10 )
     
 def plot_sleepTime(df1, df2):
     """
@@ -166,6 +172,8 @@ def plot_sleepTime(df1, df2):
     df1: normal sleep (df1 = analyse(base))
     df2: sleep depravation (df2 = analyse(depr))
     """    
+
+    plt.rc('font', family='Arial')
     N = 5
     normal = df1['sleep duration'].tolist()
     mean = sum(normal) / len(normal)
@@ -175,23 +183,26 @@ def plot_sleepTime(df1, df2):
     width = 0.35       # the width of the bars
 
     fig, ax = plt.subplots()
-    rects1 = ax.bar(ind, normal, width, color='r')
+    rects1 = ax.bar(ind, normal, width, color='b')
 
     depravation = df2['sleep duration'].tolist()
     mean = sum(depravation) / len(depravation)
     depravation.extend([mean])
 
 
-    rects2 = ax.bar(ind+width, depravation, width, color='y')
+    rects2 = ax.bar(ind+width, depravation, width, color='r')
 
     ax.set_ylabel('Sleep time (hours)')
     ax.set_xlabel('Subjects')
     
-    ax.set_title('Overall sleep duration comparison')
+    ax.set_title('Overall sleep duration comparison', fontsize=20)
     ax.set_xticks(ind+width)
     ax.set_xticklabels( ('1', '2', '3', '4', 'Mean') )
+    for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+           label.set_fontname('Arial')
+           label.set_fontsize(8)            
 
-    ax.legend( (rects1[0], rects2[0]), ('Baseline', 'After sleep depravation') )    
+    ax.legend( (rects1[0], rects2[0]), ('Baseline', 'Recovery'), loc = 'lower right', fontsize=10 )    
 
 def plot_transition(df1, df2):
     """
@@ -214,11 +225,11 @@ def plot_transition(df1, df2):
             normal = df1[clef].tolist()
             mean = sum(normal) / len(normal)
             normal.extend([mean])
-            rects1 = ax[i,j].bar(ind, normal, width, color='r')
+            rects1 = ax[i,j].bar(ind, normal, width, color='b')
             depravation = df2[clef].tolist()
             mean = sum(depravation) / len(depravation)
             depravation.extend([mean])
-            rects2 = ax[i,j].bar(ind+width, depravation, width, color='y')
+            rects2 = ax[i,j].bar(ind+width, depravation, width, color='r')
             for label in (ax[i,j].get_xticklabels() + ax[i,j].get_yticklabels()):
                 label.set_fontname('Arial')
                 label.set_fontsize(8)            
@@ -227,7 +238,44 @@ def plot_transition(df1, df2):
             ax[i,j].set_xticklabels( ('1', '2', '3', '4', 'Avg') )
             ax[i,j].set_yticks(np.arange(0, 50, 10))
             ax[i,j].set_ylim([0,45])
-    fig.legend( (rects1[0], rects2[0]), ('Baseline', 'After sleep depravation'), loc = 'lower right', fontsize=10)
+    fig.legend( (rects1[0], rects2[0]), ('Baseline', 'Recovery'), loc = 'lower right', fontsize=10)
+
+def plot_transition_ratio(df1, df2):
+    """
+    plot stage transitions
+    df1: normal sleep (df1 = analyse(base))
+    df2: sleep depravation (df2 = analyse(depr))
+    """    
+    N = 5
+    ind = np.arange(N)  # the x locations for the groups
+    width = 0.2       # he width of the bars
+    plt.close()
+    plt.rc('font', family='Arial')
+
+    fig, ax = plt.subplots(nrows=6, ncols=6, sharex='col', sharey='row')
+    fig.suptitle("Comparison of the number of stage transitions (% of total transitions) (origin stage " + u'\u2192' + " dest. stage)", fontsize=20)        
+    plt.subplots_adjust(wspace = 0.2,hspace = 0.4 )
+    for i in range(0,6): # do not care about stage transitions > 5
+        for j in range(0,6):     
+            clef = '%t' + str(i) + '-' + str(j)
+            normal = df1[clef].tolist()
+            mean = sum(normal) / len(normal)
+            normal.extend([mean])
+            rects1 = ax[i,j].bar(ind, normal, width, color='b')
+            depravation = df2[clef].tolist()
+            mean = sum(depravation) / len(depravation)
+            depravation.extend([mean])
+            rects2 = ax[i,j].bar(ind+width, depravation, width, color='r')
+            for label in (ax[i,j].get_xticklabels() + ax[i,j].get_yticklabels()):
+                label.set_fontname('Arial')
+                label.set_fontsize(8)            
+            ax[i,j].set_title(str(i) + ' ' + u'\u2192' + ' ' + str(j))
+            ax[i,j].set_xticks(ind+width)
+            ax[i,j].set_xticklabels( ('1', '2', '3', '4', 'Avg') )
+            ax[i,j].set_yticks(np.arange(0, 6, 2))
+            ax[i,j].set_ylim([0,6])
+    fig.legend( (rects1[0], rects2[0]), ('Baseline', 'Recovery'), loc = 'lower right', fontsize=10)
+
 
 if __name__ == "__main__":
 # Uncomment next to reload the files (needed to run once)
@@ -236,4 +284,5 @@ if __name__ == "__main__":
     df2 = analyse(depr)
 #    plot_histogram(df1, df2)
 #    plot_sleepTime(df1, df2)
-    plot_transition(df1, df2)
+#    plot_transition(df1, df2)
+    plot_transition_ratio(df1, df2)
