@@ -54,6 +54,9 @@ if __name__ == "__main__":
     
     plt.show()
     
+    df3['bsl_sum'] = df3.BSL.cumsum()
+    df3['rec_sum'] = df3.REC.cumsum()
+    df3['bsl_perc'] = 100*df3.bsl_sum/df3.BSL.sum()
 
 
     
