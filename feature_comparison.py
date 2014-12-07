@@ -80,7 +80,7 @@ if __name__ == "__main__":
 
     plt.rc('font', family='Arial')
     fig, ax = plt.subplots(nrows=4, ncols=2, sharex='col', sharey='row')
-    fig.suptitle("Comparison of REM stages - Baseline vs. Recovery Seep for channel 8 (C4/A1)", fontsize=20)
+    fig.suptitle("Comparison of REM stages - Baseline vs. Recovery Sleep for channel 8 (C4/A1)", fontsize=20)
     plt.subplots_adjust(wspace = .05,hspace = 0.4 )
 
     j = 1    
